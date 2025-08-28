@@ -37,7 +37,8 @@ public:
     // Constructor from string representation
     BigInt(const string &str)
     {
-        // TODO: Implement this constructor
+         // TODO: Implement this constructor
+
     }
 
     // Copy constructor
@@ -49,13 +50,17 @@ public:
     // Destructor
     ~BigInt()
     {
+        // we do not need to do anything.
         // TODO: Implement if needed
     }
 
     // Assignment operator
     BigInt &operator=(const BigInt &other)
     {
-        // TODO: Implement this operator
+        if(this == &other) return *this;
+    this-> number = other.number;
+    this->isNegative  = other.isNegative;
+
         return *this;
     }
 
@@ -63,9 +68,17 @@ public:
     BigInt operator-() const
     {
         BigInt result;
-        // TODO: Implement negation logic
+        result.number = this->number;
+        if(result.number == "0"){
+                result.isNegative = false; //Unknown behavior
+                return result;
+        }
+        result.isNegative = !this->isNegative;
+
         return result;
     }
+
+
 
     // Unary plus operator (+x)
     BigInt operator+() const
@@ -257,7 +270,40 @@ int main()
     cout << "The tests below will work once you implement them correctly." << endl
          << endl;
 
-    /*
+  /*
+    ///Testing my methods (Ahmed)
+    cout << "=== Assignment Operator Tests ===" << endl;
+    BigInt a("12345");
+    BigInt b("-67890");
+
+    cout << "Before assignment:" << endl;
+    cout << "a = " << a << endl;   // expect 12345
+    cout << "b = " << b << endl;   // expect -67890
+
+    a = b;  // test assignment
+
+    cout << "After a = b:" << endl;
+    cout << "a = " << a << endl;   // expect -67890
+    cout << "b = " << b << endl;   // expect -67890 (unchanged)
+
+    cout << "\n=== Unary Negation Tests ===" << endl;
+    BigInt c("12345");
+    BigInt d("-67890");
+    BigInt e("0");
+
+    cout << "-c = " << -c << endl;   // expect -12345
+    cout << "-d = " << -d << endl;   // expect 67890
+    cout << "-e = " << -e << endl;   // expect 0  (no negative zero!)
+
+    cout << "\n=== Chained Assignment Test ===" << endl;
+    BigInt x("111"), y("222"), z("333");
+    x = y = z;
+
+    cout << "x = " << x << endl;   // expect 333
+    cout << "y = " << y << endl;   // expect 333
+    cout << "z = " << z << endl;   // expect 333
+   ///End of my testing.
+
     // Test 1: Constructors and basic output
     cout << "1. Constructors and output:" << endl;
     BigInt a(12345);              // Should create BigInt from integer
