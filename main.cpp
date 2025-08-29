@@ -1,5 +1,6 @@
 #include <iostream>
 #include <string>
+#include <cstdint>
 using namespace std;
 
 class BigInt
@@ -25,6 +26,8 @@ public:
     // Default constructor - initialize to zero
     BigInt()
     {
+        number = "0";
+        isNegative = false;
         // TODO: Implement this constructor
     }
 
@@ -32,19 +35,49 @@ public:
     BigInt(int64_t value)
     {
         // TODO: Implement this constructor
+        number = to_string(abs(value));
+        if (value < 0)
+            isNegative = true;
+        else
+            isNegative = false;
+        removeLeadingZeros();
     }
 
     // Constructor from string representation
     BigInt(const string &str)
     {
-         // TODO: Implement this constructor
-
+        // TODO: Implement this constructor
+        if (str.empty())
+        {
+            number = "0";
+            isNegative = false;
+            return;
+        }
+        else
+        {
+            if (str[0] == '-')
+            {
+                number = str.substr(1);
+                isNegative = true;
+            }
+            else
+            {
+                number = str;
+                isNegative = false;
+            }
+        }
+        for (int i = 0; i < number.length(); i++)
+        {
+            if (!isdigit(number[i]))
+                throw invalid_argument("Invalid character in BigInt string");
+        }
+        removeLeadingZeros();
     }
-
     // Copy constructor
     BigInt(const BigInt &other)
     {
-        // TODO: Implement this constructor
+        number = other.number;
+        isNegative = other.isNegative;
     }
 
     // Destructor
@@ -57,9 +90,10 @@ public:
     // Assignment operator
     BigInt &operator=(const BigInt &other)
     {
-        if(this == &other) return *this;
-    this-> number = other.number;
-    this->isNegative  = other.isNegative;
+        if (this == &other)
+            return *this;
+        this->number = other.number;
+        this->isNegative = other.isNegative;
 
         return *this;
     }
@@ -69,16 +103,15 @@ public:
     {
         BigInt result;
         result.number = this->number;
-        if(result.number == "0"){
-                result.isNegative = false; //Unknown behavior
-                return result;
+        if (result.number == "0")
+        {
+            result.isNegative = false; // Unknown behavior
+            return result;
         }
         result.isNegative = !this->isNegative;
 
         return result;
     }
-
-
 
     // Unary plus operator (+x)
     BigInt operator+() const
@@ -270,96 +303,96 @@ int main()
     cout << "The tests below will work once you implement them correctly." << endl
          << endl;
 
-  /*
-    ///Testing my methods (Ahmed)
-    cout << "=== Assignment Operator Tests ===" << endl;
-    BigInt a("12345");
-    BigInt b("-67890");
+    /*
+      ///Testing my methods (Ahmed)
+      cout << "=== Assignment Operator Tests ===" << endl;
+      BigInt a("12345");
+      BigInt b("-67890");
 
-    cout << "Before assignment:" << endl;
-    cout << "a = " << a << endl;   // expect 12345
-    cout << "b = " << b << endl;   // expect -67890
+      cout << "Before assignment:" << endl;
+      cout << "a = " << a << endl;   // expect 12345
+      cout << "b = " << b << endl;   // expect -67890
 
-    a = b;  // test assignment
+      a = b;  // test assignment
 
-    cout << "After a = b:" << endl;
-    cout << "a = " << a << endl;   // expect -67890
-    cout << "b = " << b << endl;   // expect -67890 (unchanged)
+      cout << "After a = b:" << endl;
+      cout << "a = " << a << endl;   // expect -67890
+      cout << "b = " << b << endl;   // expect -67890 (unchanged)
 
-    cout << "\n=== Unary Negation Tests ===" << endl;
-    BigInt c("12345");
-    BigInt d("-67890");
-    BigInt e("0");
+      cout << "\n=== Unary Negation Tests ===" << endl;
+      BigInt c("12345");
+      BigInt d("-67890");
+      BigInt e("0");
 
-    cout << "-c = " << -c << endl;   // expect -12345
-    cout << "-d = " << -d << endl;   // expect 67890
-    cout << "-e = " << -e << endl;   // expect 0  (no negative zero!)
+      cout << "-c = " << -c << endl;   // expect -12345
+      cout << "-d = " << -d << endl;   // expect 67890
+      cout << "-e = " << -e << endl;   // expect 0  (no negative zero!)
 
-    cout << "\n=== Chained Assignment Test ===" << endl;
-    BigInt x("111"), y("222"), z("333");
-    x = y = z;
+      cout << "\n=== Chained Assignment Test ===" << endl;
+      BigInt x("111"), y("222"), z("333");
+      x = y = z;
 
-    cout << "x = " << x << endl;   // expect 333
-    cout << "y = " << y << endl;   // expect 333
-    cout << "z = " << z << endl;   // expect 333
-   ///End of my testing.
+      cout << "x = " << x << endl;   // expect 333
+      cout << "y = " << y << endl;   // expect 333
+      cout << "z = " << z << endl;   // expect 333
+     ///End of my testing.
 
-    // Test 1: Constructors and basic output
-    cout << "1. Constructors and output:" << endl;
-    BigInt a(12345);              // Should create BigInt from integer
-    BigInt b("-67890");           // Should create BigInt from string
-    BigInt c("0");                // Should handle zero correctly
-    BigInt d = a;                 // Should use copy constructor
-    cout << "a (from int): " << a << endl;        // Should print "12345"
-    cout << "b (from string): " << b << endl;     // Should print "-67890"
-    cout << "c (zero): " << c << endl;            // Should print "0"
-    cout << "d (copy of a): " << d << endl << endl; // Should print "12345"
+      // Test 1: Constructors and basic output
+      cout << "1. Constructors and output:" << endl;
+      BigInt a(12345);              // Should create BigInt from integer
+      BigInt b("-67890");           // Should create BigInt from string
+      BigInt c("0");                // Should handle zero correctly
+      BigInt d = a;                 // Should use copy constructor
+      cout << "a (from int): " << a << endl;        // Should print "12345"
+      cout << "b (from string): " << b << endl;     // Should print "-67890"
+      cout << "c (zero): " << c << endl;            // Should print "0"
+      cout << "d (copy of a): " << d << endl << endl; // Should print "12345"
 
-    // Test 2: Arithmetic operations
-    cout << "2. Arithmetic operations:" << endl;
-    cout << "a + b = " << a + b << endl;          // Should calculate 12345 + (-67890)
-    cout << "a - b = " << a - b << endl;          // Should calculate 12345 - (-67890)
-    cout << "a * b = " << a * b << endl;          // Should calculate 12345 * (-67890)
-    cout << "b / a = " << b / a << endl;          // Should calculate (-67890) / 12345
-    cout << "a % 100 = " << a % BigInt(100) << endl << endl; // Should calculate 12345 % 100
+      // Test 2: Arithmetic operations
+      cout << "2. Arithmetic operations:" << endl;
+      cout << "a + b = " << a + b << endl;          // Should calculate 12345 + (-67890)
+      cout << "a - b = " << a - b << endl;          // Should calculate 12345 - (-67890)
+      cout << "a * b = " << a * b << endl;          // Should calculate 12345 * (-67890)
+      cout << "b / a = " << b / a << endl;          // Should calculate (-67890) / 12345
+      cout << "a % 100 = " << a % BigInt(100) << endl << endl; // Should calculate 12345 % 100
 
-    // Test 3: Relational operators
-    cout << "3. Relational operators:" << endl;
-    cout << "a == d: " << (a == d) << endl;       // Should be true (12345 == 12345)
-    cout << "a != b: " << (a != b) << endl;       // Should be true (12345 != -67890)
-    cout << "a < b: " << (a < b) << endl;         // Should be false (12345 < -67890)
-    cout << "a > b: " << (a > b) << endl;         // Should be true (12345 > -67890)
-    cout << "c == 0: " << (c == BigInt(0)) << endl << endl; // Should be true (0 == 0)
+      // Test 3: Relational operators
+      cout << "3. Relational operators:" << endl;
+      cout << "a == d: " << (a == d) << endl;       // Should be true (12345 == 12345)
+      cout << "a != b: " << (a != b) << endl;       // Should be true (12345 != -67890)
+      cout << "a < b: " << (a < b) << endl;         // Should be false (12345 < -67890)
+      cout << "a > b: " << (a > b) << endl;         // Should be true (12345 > -67890)
+      cout << "c == 0: " << (c == BigInt(0)) << endl << endl; // Should be true (0 == 0)
 
-    // Test 4: Unary operators and increments
-    cout << "4. Unary operators and increments:" << endl;
-    cout << "-a: " << -a << endl;                 // Should print "-12345"
-    cout << "++a: " << ++a << endl;               // Should increment and print "12346"
-    cout << "a--: " << a-- << endl;               // Should print "12346" then decrement
-    cout << "a after decrement: " << a << endl << endl; // Should print "12345"
+      // Test 4: Unary operators and increments
+      cout << "4. Unary operators and increments:" << endl;
+      cout << "-a: " << -a << endl;                 // Should print "-12345"
+      cout << "++a: " << ++a << endl;               // Should increment and print "12346"
+      cout << "a--: " << a-- << endl;               // Should print "12346" then decrement
+      cout << "a after decrement: " << a << endl << endl; // Should print "12345"
 
-    // Test 5: Large number operations
-    cout << "5. Large number operations:" << endl;
-    BigInt num1("12345678901234567890");
-    BigInt num2("98765432109876543210");
-    cout << "Very large addition: " << num1 + num2 << endl;
-    cout << "Very large multiplication: " << num1 * num2 << endl << endl;
+      // Test 5: Large number operations
+      cout << "5. Large number operations:" << endl;
+      BigInt num1("12345678901234567890");
+      BigInt num2("98765432109876543210");
+      cout << "Very large addition: " << num1 + num2 << endl;
+      cout << "Very large multiplication: " << num1 * num2 << endl << endl;
 
-    // Test 6: Edge cases and error handling
-    cout << "6. Edge cases:" << endl;
-    BigInt zero(0);
-    BigInt one(1);
-    try {
-        BigInt result = one / zero;               // Should throw division by zero error
-        cout << "Division by zero succeeded (unexpected)" << endl;
-    } catch (const runtime_error& e) {
-        cout << "Division by zero correctly threw error: " << e.what() << endl;
-    }
-    cout << "Multiplication by zero: " << one * zero << endl;        // Should be "0"
-    cout << "Negative multiplication: " << BigInt(-5) * BigInt(3) << endl;  // Should be "-15"
-    cout << "Negative division: " << BigInt(-10) / BigInt(3) << endl;       // Should be "-3"
-    cout << "Negative modulus: " << BigInt(-10) % BigInt(3) << endl;        // Should be "-1"
-    */
+      // Test 6: Edge cases and error handling
+      cout << "6. Edge cases:" << endl;
+      BigInt zero(0);
+      BigInt one(1);
+      try {
+          BigInt result = one / zero;               // Should throw division by zero error
+          cout << "Division by zero succeeded (unexpected)" << endl;
+      } catch (const runtime_error& e) {
+          cout << "Division by zero correctly threw error: " << e.what() << endl;
+      }
+      cout << "Multiplication by zero: " << one * zero << endl;        // Should be "0"
+      cout << "Negative multiplication: " << BigInt(-5) * BigInt(3) << endl;  // Should be "-15"
+      cout << "Negative division: " << BigInt(-10) / BigInt(3) << endl;       // Should be "-3"
+      cout << "Negative modulus: " << BigInt(-10) % BigInt(3) << endl;        // Should be "-1"
+      */
 
     return 0;
 }
