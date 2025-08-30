@@ -116,23 +116,65 @@ public:
     // Unary plus operator (+x)
     BigInt operator+() const
     {
-        BigInt result;
-        // TODO: Implement this operator
-        return result;
+    return *this;
     }
 
     // Addition assignment operator (x += y)
     BigInt &operator+=(const BigInt &other)
     {
-        // TODO: Implement this operator
-        return *this;
+    string result = "";
+    int carry = 0;
+    int i = number.size() - 1;
+    int j = other.number.size() - 1;
+
+    while (i >= 0 || j >= 0 || carry)
+    {
+        int digit1 = i >= 0 ? number[i--] - '0' : 0;
+        int digit2 = j >= 0 ? other.number[j--] - '0' : 0;
+        int sum = digit1 + digit2 + carry;
+        carry = sum / 10;
+        result = char(sum % 10 + '0') + result;
     }
+
+    number = result;
+    isNegative = false; // مؤقتًا، تجاهل الإشارة
+    return *this;
+    }
+
 
     // Subtraction assignment operator (x -= y)
     BigInt &operator-=(const BigInt &other)
     {
-        // TODO: Implement this operator
-        return *this;
+    string result = "";
+    int borrow = 0;
+    int i = number.size() - 1;
+    int j = other.number.size() - 1;
+
+    while (i >= 0)
+    {
+        int digit1 = number[i--] - '0' - borrow;
+        int digit2 = j >= 0 ? other.number[j--] - '0' : 0;
+
+        if (digit1 < digit2)
+        {
+            digit1 += 10;
+            borrow = 1;
+        }
+        else
+        {
+            borrow = 0;
+        }
+
+        result = char(digit1 - digit2 + '0') + result;
+    }
+
+    // إزالة الأصفار الزائدة من البداية
+    while (result.size() > 1 && result[0] == '0')
+        result.erase(0, 1);
+
+    number = result;
+    isNegative = false; // مؤقتًا، تجاهل الإشارة
+    return *this;
     }
 
     // Multiplication assignment operator (x *= y)
