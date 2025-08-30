@@ -137,7 +137,7 @@ public:
     }
 
     number = result;
-    isNegative = false; // مؤقتًا، تجاهل الإشارة
+    isNegative = false; 
     return *this;
     }
 
@@ -168,12 +168,11 @@ public:
         result = char(digit1 - digit2 + '0') + result;
     }
 
-    // إزالة الأصفار الزائدة من البداية
     while (result.size() > 1 && result[0] == '0')
         result.erase(0, 1);
 
     number = result;
-    isNegative = false; // مؤقتًا، تجاهل الإشارة
+    isNegative = false;
     return *this;
     }
 
