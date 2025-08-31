@@ -1,5 +1,6 @@
 #include <iostream>
 #include <string>
+#include <vector>
 using namespace std;
 
 class BigInt
@@ -177,6 +178,10 @@ public:
     // Friend declarations for comparison operators
     friend bool operator==(const BigInt &lhs, const BigInt &rhs);
     friend bool operator<(const BigInt &lhs, const BigInt &rhs);
+    friend BigInt operator*(BigInt lhs  ,const BigInt &rhs);
+    friend BigInt operator/(BigInt lhs , const BigInt &rhs);
+    friend pair <BigInt, BigInt > dividAndMode (const BigInt &lhs,const BigInt &rhs);
+    friend bool operator >=(const BigInt &lhs, const BigInt &rhs) ;
 };
 
 // Binary addition operator (x + y)
@@ -190,33 +195,113 @@ BigInt operator+(BigInt lhs, const BigInt &rhs)
 // Binary subtraction operator (x - y)
 BigInt operator-(BigInt lhs, const BigInt &rhs)
 {
-    BigInt result;
-    // TODO: Implement this operator
-    return result;
+
+    return lhs + (-rhs);
 }
 
 // Binary multiplication operator (x * y)
-BigInt operator*(BigInt lhs, const BigInt &rhs)
+ BigInt operator*(BigInt lhs, const BigInt &rhs)
 {
-    BigInt result;
-    // TODO: Implement this operator
-    return result;
-}
 
+   if(lhs.number == "0" || rhs.number == "0" ){
+
+    return BigInt("0");
+   }
+   string a = lhs.number;
+   string b = rhs.number;
+   int n = a.size();
+   int m = b.size();
+   vector<int> res (m + n , 0);
+   for(int i = n-1  ; i>= 0 ; i-- ){
+    for(int j = m -1  ; j >= 0 ; j--){
+        int mult = (a[i] - '0' ) * (b[j] - '0') ;
+        int sum = res[i +j +1] + mult;
+        res[i + j + 1] = sum%10 ;
+        res[i+j] += sum/10;
+    }
+   }
+   string finalres = "";
+   for(int digit : res){
+    if(!(finalres.empty()&& digit == 0)){
+       finalres.push_back(digit + '0');
+    }
+   }
+   if(finalres.empty()){
+
+    finalres = "0";
+   }
+   BigInt result (finalres);
+   result.isNegative = (lhs.isNegative != rhs.isNegative);
+   if(finalres == "0"){
+    result.isNegative = false;
+   }
+   result.removeLeadingZeros();
+    return result;
+
+}
+// Helper function
+pair <BigInt, BigInt > dividAndMode(const BigInt &lhs, const BigInt &rhs)
+{
+    if(rhs.number == "0")
+    {
+        throw runtime_error ("Division by 0");
+    }
+    if(lhs.number == "0")
+    {
+        return {BigInt("0"),BigInt("0")};
+    }
+    bool resultsign = (lhs.isNegative != rhs.isNegative);
+    string quotient = "";
+    BigInt dividend = lhs;
+    BigInt divisor = rhs;
+    dividend.isNegative = false;
+    divisor.isNegative = false;
+    BigInt remainder ("0");
+
+    for(char d : dividend.number)
+    {
+        remainder = remainder * BigInt(10) + BigInt(d - '0');
+        int counter = 0;
+        while(remainder >= divisor)
+        {
+            remainder = remainder - divisor ;
+            counter++;
+        }
+
+        quotient.push_back(counter + '0');
+    }
+    BigInt q (quotient);
+    q.removeLeadingZeros();
+    if(q == BigInt("0"))
+    {
+        q.isNegative = false ;
+
+    }
+    else
+    {
+        q.isNegative = resultsign;
+    }
+    remainder.removeLeadingZeros();
+    if(remainder.number == "0")
+    {
+        remainder.isNegative = false ;
+    }
+    else
+    {
+        remainder.isNegative = lhs.isNegative;
+    }
+    return {q, remainder};
+}
 // Binary division operator (x / y)
 BigInt operator/(BigInt lhs, const BigInt &rhs)
 {
-    BigInt result;
-    // TODO: Implement this operator
-    return result;
+    return dividAndMode(lhs , rhs).first;
 }
 
 // Binary modulus operator (x % y)
 BigInt operator%(BigInt lhs, const BigInt &rhs)
 {
-    BigInt result;
-    // TODO: Implement this operator
-    return result;
+    return dividAndMode(lhs , rhs).second;
 }
 
 // Equality comparison operator (x == y)
