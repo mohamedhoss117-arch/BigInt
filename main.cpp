@@ -4,8 +4,8 @@ using namespace std;
 
 class BigInt
 {
-    string number;   // Stores the number as a string
-    bool isNegative; // True if number is negative
+    string number;
+    bool isNegative;
 
     void removeLeadingZeros()
     {
@@ -20,8 +20,6 @@ class BigInt
             number = "0";
     }
 
-    // Compare absolute values of two BigInts (ignore signs)
-    // Returns: 1 if |this| > |other|, 0 if equal, -1 if |this| < |other|
     int compareMagnitude(const BigInt &other) const
     {
         if (number.size() > other.number.size())
@@ -131,22 +129,22 @@ public:
     // Pre-increment operator (++x)
     BigInt &operator++()
     {
-        // TODO: Implement this operator
+        *this += BigInt(1);
         return *this;
     }
 
     // Post-increment operator (x++)
     BigInt operator++(int)
     {
-        BigInt temp;
-        // TODO: Implement this operator
+        BigInt temp = *this;
+        *this += BigInt(1);
         return temp;
     }
 
     // Pre-decrement operator (--x)
     BigInt &operator--()
     {
-        // TODO: Implement this operator
+        *this -= BigInt(1);
         return *this;
     }
 
@@ -154,7 +152,8 @@ public:
     BigInt operator--(int)
     {
         BigInt temp;
-        // TODO: Implement this operator
+        BigInt temp = *this;
+        *this -= BigInt(1);
         return temp;
     }
 
