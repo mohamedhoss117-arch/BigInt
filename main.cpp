@@ -116,23 +116,63 @@ public:
     // Unary plus operator (+x)
     BigInt operator+() const
     {
-        BigInt result;
-        // TODO: Implement this operator
-        return result;
+    return *this;
     }
 
     // Addition assignment operator (x += y)
     BigInt &operator+=(const BigInt &other)
     {
-        // TODO: Implement this operator
-        return *this;
+    string result = "";
+    int carry = 0;
+    int i = number.size() - 1;
+    int j = other.number.size() - 1;
+
+    while (i >= 0 || j >= 0 || carry)
+    {
+        int digit1 = i >= 0 ? number[i--] - '0' : 0;
+        int digit2 = j >= 0 ? other.number[j--] - '0' : 0;
+        int sum = digit1 + digit2 + carry;
+        carry = sum / 10;
+        result = char(sum % 10 + '0') + result;
+    }
+
+    number = result;
+    isNegative = false; 
+    return *this;
     }
 
     // Subtraction assignment operator (x -= y)
     BigInt &operator-=(const BigInt &other)
     {
-        // TODO: Implement this operator
-        return *this;
+    string result = "";
+    int borrow = 0;
+    int i = number.size() - 1;
+    int j = other.number.size() - 1;
+
+    while (i >= 0)
+    {
+        int digit1 = number[i--] - '0' - borrow;
+        int digit2 = j >= 0 ? other.number[j--] - '0' : 0;
+
+        if (digit1 < digit2)
+        {
+            digit1 += 10;
+            borrow = 1;
+        }
+        else
+        {
+            borrow = 0;
+        }
+
+        result = char(digit1 - digit2 + '0') + result;
+    }
+
+    while (result.size() > 1 && result[0] == '0')
+        result.erase(0, 1);
+
+    number = result;
+    isNegative = false;
+    return *this;
     }
 
     // Multiplication assignment operator (x *= y)
@@ -255,16 +295,44 @@ BigInt operator%(BigInt lhs, const BigInt &rhs)
 // Equality comparison operator (x == y)
 bool operator==(const BigInt &lhs, const BigInt &rhs)
 {
-    // TODO: Implement this operator
-    return false;
+
+    return (lhs.isNegative == rhs.isNegative &&
+            lhs.number == rhs.number);
 }
 
 // Inequality comparison operator (x != y)
 bool operator!=(const BigInt &lhs, const BigInt &rhs)
 {
-    // TODO: Implement this operator
-    return false;
+    return !(lhs == rhs);
 }
+
+// Less-than comparison operator (x < y)
+bool operator<(const BigInt &lhs, const BigInt &rhs)
+{
+    if (lhs.isNegative != rhs.isNegative)
+        return lhs.isNegative; 
+
+    if (lhs.number.size() != rhs.number.size())
+    {
+        if (lhs.isNegative)
+            return lhs.number.size() > rhs.number.size(); 
+        else
+            return lhs.number.size() < rhs.number.size();
+    }
+
+    if (lhs.isNegative)
+        return lhs.number > rhs.number;
+    else
+        return lhs.number < rhs.number;
+}
+
+// Less-than-or-equal comparison operator (x <= y)
+bool operator<=(const BigInt &lhs, const BigInt &rhs)
+{
+    return (lhs < rhs || lhs == rhs);
+}
+
+
 
 // Less-than comparison operator (x < y)
 bool operator<(const BigInt &lhs, const BigInt &rhs)
