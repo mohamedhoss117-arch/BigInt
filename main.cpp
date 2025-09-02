@@ -5,20 +5,36 @@ using namespace std;
 
 class BigInt
 {
-    string number;   // Stores the number as a string
-    bool isNegative; // True if number is negative
+    string number;
+    bool isNegative;
 
-    // Remove unnecessary leading zeros from the number string
     void removeLeadingZeros()
     {
-        // TODO: Implement this function
+        size_t i = 0;
+        while (i < number.size() - 1 && number[i] == '0')
+        {
+            i++;
+        }
+        number = number.substr(i);
+
+        if (number.empty())
+            number = "0";
     }
 
-    // Compare absolute values of two BigInts (ignore signs)
-    // Returns: 1 if |this| > |other|, 0 if equal, -1 if |this| < |other|
     int compareMagnitude(const BigInt &other) const
     {
-        // TODO: Implement this function
+        if (number.size() > other.number.size())
+            return 1;
+        if (number.size() < other.number.size())
+            return -1;
+
+        for (size_t i = 0; i < number.size(); i++)
+        {
+            if (number[i] > other.number[i])
+                return 1;
+            if (number[i] < other.number[i])
+                return -1;
+        }
         return 0;
     }
 
@@ -159,22 +175,22 @@ public:
     // Pre-increment operator (++x)
     BigInt &operator++()
     {
-        // TODO: Implement this operator
+        *this += BigInt(1);
         return *this;
     }
 
     // Post-increment operator (x++)
     BigInt operator++(int)
     {
-        BigInt temp;
-        // TODO: Implement this operator
+        BigInt temp = *this;
+        *this += BigInt(1);
         return temp;
     }
 
     // Pre-decrement operator (--x)
     BigInt &operator--()
     {
-        // TODO: Implement this operator
+        *this -= BigInt(1);
         return *this;
     }
 
@@ -182,7 +198,8 @@ public:
     BigInt operator--(int)
     {
         BigInt temp;
-        // TODO: Implement this operator
+        BigInt temp = *this;
+        *this -= BigInt(1);
         return temp;
     }
 
