@@ -142,7 +142,11 @@ public:
     // Unary plus operator (+x)
     BigInt operator+() const
     {
-    return *this;
+     // TODO: Implement this operator
+        BigInt result;
+        result.number = this->number;
+        result.isNegative = this->isNegative;
+        return result;
     }
 
     // Addition assignment operator (x += y)
@@ -264,13 +268,18 @@ public:
     string toString() const
     {
         // TODO: Implement this function
-        return "";
+        if (this->number == "0")
+            return "0";
+        if (this->isNegative == true)
+            return "-" + this->number;
+        return this->number;
     }
 
     // Output stream operator (for printing)
     friend ostream &operator<<(ostream &os, const BigInt &num)
     {
         // TODO: Implement this operator
+        os << num.toString();
         return os;
     }
 
@@ -278,6 +287,30 @@ public:
     friend istream &operator>>(istream &is, BigInt &num)
     {
         // TODO: Implement this operator
+        string input;
+        is >> input;
+        if (input.empty())
+        {
+            num.number = "0";
+            num.isNegative = false;
+            return is;
+        }
+        if (input[0] == '-')
+        {
+            num.number = input.substr(1);
+            num.isNegative = true;
+        }
+        else if (input[0] == '+')
+        {
+            num.number = input.substr(1);
+            num.isNegative = false;
+        }
+        else
+        {
+            num.number = input;
+            num.isNegative = false;
+        }
+        num.removeLeadingZeros();
         return is;
     }
 
