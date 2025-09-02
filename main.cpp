@@ -40,6 +40,16 @@ class BigInt
 
 public:
     // Default constructor - initialize to zero
+
+    friend BigInt &operator*=(BigInt &, const BigInt &);
+    friend BigInt &operator/=(BigInt &, const BigInt &);
+    friend BigInt &operator%=(BigInt &, const BigInt &);
+    friend bool operator>(const BigInt &, const BigInt &);
+    friend bool operator>=(const BigInt &, const BigInt &);
+
+
+
+
     BigInt()
     {
         number = "0";
@@ -154,23 +164,30 @@ public:
     // Multiplication assignment operator (x *= y)
     BigInt &operator*=(const BigInt &other)
     {
-        // TODO: Implement this operator
+        *this = *this * other;  
         return *this;
     }
 
     // Division assignment operator (x /= y)
     BigInt &operator/=(const BigInt &other)
     {
-        // TODO: Implement this operator
+
+    if (other.number == "0") {
+        throw std::runtime_error("division by zero");
+    }
+       *this = *this / other;
         return *this;
     }
 
     // Modulus assignment operator (x %= y)
-    BigInt &operator%=(const BigInt &other)
-    {
-        // TODO: Implement this operator
+        BigInt &operator%=(const BigInt &other)
+        {
+        if (other.number == "0") {
+        throw runtime_error("division by zero");
+        }
+        *this = *this % other;
         return *this;
-    }
+        }
 
     // Pre-increment operator (++x)
     BigInt &operator++()
@@ -300,16 +317,15 @@ bool operator<=(const BigInt &lhs, const BigInt &rhs)
 // Greater-than comparison operator (x > y)
 bool operator>(const BigInt &lhs, const BigInt &rhs)
 {
-    // TODO: Implement this operator
-    return false;
+    return rhs < lhs;
 }
 
 // Greater-than-or-equal comparison operator (x >= y)
 bool operator>=(const BigInt &lhs, const BigInt &rhs)
 {
-    // TODO: Implement this operator
-    return false;
+    return !(lhs < rhs);
 }
+
 
 int main()
 {
