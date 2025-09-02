@@ -5,25 +5,51 @@ using namespace std;
 
 class BigInt
 {
-    string number;   // Stores the number as a string
-    bool isNegative; // True if number is negative
+    string number;
+    bool isNegative;
 
-    // Remove unnecessary leading zeros from the number string
     void removeLeadingZeros()
     {
-        // TODO: Implement this function
+        size_t i = 0;
+        while (i < number.size() - 1 && number[i] == '0')
+        {
+            i++;
+        }
+        number = number.substr(i);
+
+        if (number.empty())
+            number = "0";
     }
 
-    // Compare absolute values of two BigInts (ignore signs)
-    // Returns: 1 if |this| > |other|, 0 if equal, -1 if |this| < |other|
     int compareMagnitude(const BigInt &other) const
     {
-        // TODO: Implement this function
+        if (number.size() > other.number.size())
+            return 1;
+        if (number.size() < other.number.size())
+            return -1;
+
+        for (size_t i = 0; i < number.size(); i++)
+        {
+            if (number[i] > other.number[i])
+                return 1;
+            if (number[i] < other.number[i])
+                return -1;
+        }
         return 0;
     }
 
 public:
     // Default constructor - initialize to zero
+
+    friend BigInt &operator*=(BigInt &, const BigInt &);
+    friend BigInt &operator/=(BigInt &, const BigInt &);
+    friend BigInt &operator%=(BigInt &, const BigInt &);
+    friend bool operator>(const BigInt &, const BigInt &);
+    friend bool operator>=(const BigInt &, const BigInt &);
+
+
+
+
     BigInt()
     {
         number = "0";
@@ -116,7 +142,7 @@ public:
     // Unary plus operator (+x)
     BigInt operator+() const
     {
-        // TODO: Implement this operator
+     // TODO: Implement this operator
         BigInt result;
         result.number = this->number;
         result.isNegative = this->isNegative;
@@ -126,57 +152,106 @@ public:
     // Addition assignment operator (x += y)
     BigInt &operator+=(const BigInt &other)
     {
-        // TODO: Implement this operator
-        return *this;
+    string result = "";
+    int carry = 0;
+    int i = number.size() - 1;
+    int j = other.number.size() - 1;
+
+    while (i >= 0 || j >= 0 || carry)
+    {
+        int digit1 = i >= 0 ? number[i--] - '0' : 0;
+        int digit2 = j >= 0 ? other.number[j--] - '0' : 0;
+        int sum = digit1 + digit2 + carry;
+        carry = sum / 10;
+        result = char(sum % 10 + '0') + result;
+    }
+
+    number = result;
+    isNegative = false; 
+    return *this;
     }
 
     // Subtraction assignment operator (x -= y)
     BigInt &operator-=(const BigInt &other)
     {
-        // TODO: Implement this operator
-        return *this;
+    string result = "";
+    int borrow = 0;
+    int i = number.size() - 1;
+    int j = other.number.size() - 1;
+
+    while (i >= 0)
+    {
+        int digit1 = number[i--] - '0' - borrow;
+        int digit2 = j >= 0 ? other.number[j--] - '0' : 0;
+
+        if (digit1 < digit2)
+        {
+            digit1 += 10;
+            borrow = 1;
+        }
+        else
+        {
+            borrow = 0;
+        }
+
+        result = char(digit1 - digit2 + '0') + result;
+    }
+
+    while (result.size() > 1 && result[0] == '0')
+        result.erase(0, 1);
+
+    number = result;
+    isNegative = false;
+    return *this;
     }
 
     // Multiplication assignment operator (x *= y)
     BigInt &operator*=(const BigInt &other)
     {
-        // TODO: Implement this operator
+        *this = *this * other;  
         return *this;
     }
 
     // Division assignment operator (x /= y)
     BigInt &operator/=(const BigInt &other)
     {
-        // TODO: Implement this operator
+
+    if (other.number == "0") {
+        throw std::runtime_error("division by zero");
+    }
+       *this = *this / other;
         return *this;
     }
 
     // Modulus assignment operator (x %= y)
-    BigInt &operator%=(const BigInt &other)
-    {
-        // TODO: Implement this operator
+        BigInt &operator%=(const BigInt &other)
+        {
+        if (other.number == "0") {
+        throw runtime_error("division by zero");
+        }
+        *this = *this % other;
         return *this;
-    }
+        }
 
     // Pre-increment operator (++x)
     BigInt &operator++()
     {
-        // TODO: Implement this operator
+        *this += BigInt(1);
         return *this;
     }
 
     // Post-increment operator (x++)
     BigInt operator++(int)
     {
-        BigInt temp;
-        // TODO: Implement this operator
+        BigInt temp = *this;
+        *this += BigInt(1);
         return temp;
     }
 
     // Pre-decrement operator (--x)
     BigInt &operator--()
     {
-        // TODO: Implement this operator
+        *this -= BigInt(1);
         return *this;
     }
 
@@ -184,7 +259,8 @@ public:
     BigInt operator--(int)
     {
         BigInt temp;
-        // TODO: Implement this operator
+        BigInt temp = *this;
+        *this -= BigInt(1);
         return temp;
     }
 
@@ -286,16 +362,44 @@ BigInt operator%(BigInt lhs, const BigInt &rhs)
 // Equality comparison operator (x == y)
 bool operator==(const BigInt &lhs, const BigInt &rhs)
 {
-    // TODO: Implement this operator
-    return false;
+
+    return (lhs.isNegative == rhs.isNegative &&
+            lhs.number == rhs.number);
 }
 
 // Inequality comparison operator (x != y)
 bool operator!=(const BigInt &lhs, const BigInt &rhs)
 {
-    // TODO: Implement this operator
-    return false;
+    return !(lhs == rhs);
 }
+
+// Less-than comparison operator (x < y)
+bool operator<(const BigInt &lhs, const BigInt &rhs)
+{
+    if (lhs.isNegative != rhs.isNegative)
+        return lhs.isNegative; 
+
+    if (lhs.number.size() != rhs.number.size())
+    {
+        if (lhs.isNegative)
+            return lhs.number.size() > rhs.number.size(); 
+        else
+            return lhs.number.size() < rhs.number.size();
+    }
+
+    if (lhs.isNegative)
+        return lhs.number > rhs.number;
+    else
+        return lhs.number < rhs.number;
+}
+
+// Less-than-or-equal comparison operator (x <= y)
+bool operator<=(const BigInt &lhs, const BigInt &rhs)
+{
+    return (lhs < rhs || lhs == rhs);
+}
+
+
 
 // Less-than comparison operator (x < y)
 bool operator<(const BigInt &lhs, const BigInt &rhs)
@@ -314,16 +418,15 @@ bool operator<=(const BigInt &lhs, const BigInt &rhs)
 // Greater-than comparison operator (x > y)
 bool operator>(const BigInt &lhs, const BigInt &rhs)
 {
-    // TODO: Implement this operator
-    return false;
+    return rhs < lhs;
 }
 
 // Greater-than-or-equal comparison operator (x >= y)
 bool operator>=(const BigInt &lhs, const BigInt &rhs)
 {
-    // TODO: Implement this operator
-    return false;
+    return !(lhs < rhs);
 }
+
 
 int main()
 {
